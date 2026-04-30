@@ -1,7 +1,8 @@
 ---
-title: "README"
-output: html_document
-date: "2026-04-30"
+title: "My Project"
+output:
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
