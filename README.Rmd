@@ -13,10 +13,51 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Mason Gliege, Ewan Farnum, Ishan Nichols
 
+# Cleaning
+
+First, we read the dataset and stored it as a dataframe. 
+
+The data had some null sales numbers, so we replaced them with zeros. 
+
+There were also null values for critic scores. Since there is no way to estimate scores on games using the existing data, we removed all rows with no score.
 ```{r}
 library(tidyverse)
 df <- read.csv("video_games_raw.csv")
 
+str(df)
+
 View(df)
+
+df_clean <- df %>% replace_na(list(jp_sales = 0, na_sales = 0, pal_sales = 0, other_sales = 0)) %>% drop_na(critic_score) 
+
+
 ```
+
+### Next, we split the games into different categories by sales.
+
+Small Games: under 100k sales
+Medium Games: between 100k and 1 million sales
+Large Games: between 1 million and 10 million sales
+Very_Large_Games: over 10 million sales
+
+```{r}
+# Filter for games with less than 100k sales
+small_games <- df_clean %>% 
+  filter(total_sales < 0.1)
+
+# Filter for games between 100k and 1 million sales
+medium_games <- df_clean %>% 
+  filter(total_sales >= 0.1 & total_sales < 1)
+
+# Filter for games between 1 million and 10 million sales
+large_games <- df_clean %>% 
+  filter(total_sales >= 1 & total_sales < 10)
+
+# Filter for games with 10 million or more sales
+very_large_games <- df_clean %>% 
+  filter(total_sales >= 10)
+
+
+```
+
 

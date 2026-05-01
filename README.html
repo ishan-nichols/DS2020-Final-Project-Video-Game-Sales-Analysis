@@ -356,6 +356,15 @@ display: none;
 <div id="video-game-sales-analysis" class="section level2">
 <h2>Video Game Sales Analysis</h2>
 <p>Mason Gliege, Ewan Farnum, Ishan Nichols</p>
+</div>
+<div id="cleaning" class="section level1">
+<h1>Cleaning</h1>
+<p>First, we read the dataset and stored it as a dataframe.</p>
+<p>The data had some null sales numbers, so we replaced them with
+zeros.</p>
+<p>There were also null values for critic scores. Since there is no way
+to estimate scores on games using the existing data, we removed all rows
+with no score.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
@@ -369,7 +378,46 @@ display: none;
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <pre class="r"><code>df &lt;- read.csv(&quot;video_games_raw.csv&quot;)
 
-View(df)</code></pre>
+str(df)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    64016 obs. of  14 variables:
+##  $ img         : chr  &quot;/games/boxart/full_6510540AmericaFrontccc.jpg&quot; &quot;/games/boxart/full_5563178AmericaFrontccc.jpg&quot; &quot;/games/boxart/827563ccc.jpg&quot; &quot;/games/boxart/full_9218923AmericaFrontccc.jpg&quot; ...
+##  $ title       : chr  &quot;Grand Theft Auto V&quot; &quot;Grand Theft Auto V&quot; &quot;Grand Theft Auto: Vice City&quot; &quot;Grand Theft Auto V&quot; ...
+##  $ console     : chr  &quot;PS3&quot; &quot;PS4&quot; &quot;PS2&quot; &quot;X360&quot; ...
+##  $ genre       : chr  &quot;Action&quot; &quot;Action&quot; &quot;Action&quot; &quot;Action&quot; ...
+##  $ publisher   : chr  &quot;Rockstar Games&quot; &quot;Rockstar Games&quot; &quot;Rockstar Games&quot; &quot;Rockstar Games&quot; ...
+##  $ developer   : chr  &quot;Rockstar North&quot; &quot;Rockstar North&quot; &quot;Rockstar North&quot; &quot;Rockstar North&quot; ...
+##  $ critic_score: num  9.4 9.7 9.6 NA 8.1 8.7 8.8 9.8 8.4 8 ...
+##  $ total_sales : num  20.3 19.4 16.1 15.9 15.1 ...
+##  $ na_sales    : num  6.37 6.06 8.41 9.06 6.18 9.07 9.76 5.26 8.27 4.99 ...
+##  $ jp_sales    : num  0.99 0.6 0.47 0.06 0.41 0.13 0.11 0.21 0.07 0.65 ...
+##  $ pal_sales   : num  9.85 9.71 5.49 5.33 6.05 4.29 3.73 6.21 4.32 5.88 ...
+##  $ other_sales : num  3.12 3.02 1.78 1.42 2.44 1.33 1.14 2.26 1.2 2.28 ...
+##  $ release_date: chr  &quot;17-09-2013&quot; &quot;18-11-2014&quot; &quot;28-10-2002&quot; &quot;17-09-2013&quot; ...
+##  $ last_update : chr  &quot;&quot; &quot;03-01-2018&quot; &quot;&quot; &quot;&quot; ...</code></pre>
+<pre class="r"><code>View(df)
+
+df_clean &lt;- df %&gt;% replace_na(list(jp_sales = 0, na_sales = 0, pal_sales = 0, other_sales = 0)) %&gt;% drop_na(critic_score) </code></pre>
+<div id="next-we-split-the-games-into-different-categories-by-sales." class="section level3">
+<h3>Next, we split the games into different categories by sales.</h3>
+<p>Small Games: under 100k sales Medium Games: between 100k and 1
+million sales Large Games: between 1 million and 10 million sales
+Very_Large_Games: over 10 million sales</p>
+<pre class="r"><code># Filter for games with less than 100k sales
+small_games &lt;- df_clean %&gt;% 
+  filter(total_sales &lt; 0.1)
+
+# Filter for games between 100k and 1 million sales
+medium_games &lt;- df_clean %&gt;% 
+  filter(total_sales &gt;= 0.1 &amp; total_sales &lt; 1)
+
+# Filter for games between 1 million and 10 million sales
+large_games &lt;- df_clean %&gt;% 
+  filter(total_sales &gt;= 1 &amp; total_sales &lt; 10)
+
+# Filter for games with 10 million or more sales
+very_large_games &lt;- df_clean %&gt;% 
+  filter(total_sales &gt;= 10)</code></pre>
+</div>
 </div>
 
 
