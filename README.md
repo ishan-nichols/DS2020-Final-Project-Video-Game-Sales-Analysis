@@ -17,7 +17,7 @@ First, we read the dataset and stored it as a dataframe.
 
 The data had some null sales numbers, so we replaced them with zeros. 
 
-There were also null values for critic scores. Since there is no way to estimate scores on games using the existing data, we removed all rows with no score.
+There were also null values for critic scores. Since there is no way to estimate scores on games using the existing data, we removed all rows with no score. Additionally, there were null values in total sales so those were also removed
 
 ``` r
 library(tidyverse)
@@ -25,11 +25,11 @@ library(tidyverse)
 
 ```
 ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ dplyr     1.2.0     ✔ readr     2.2.0
 ## ✔ forcats   1.0.1     ✔ stringr   1.6.0
-## ✔ ggplot2   4.0.0     ✔ tibble    3.3.0
-## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-## ✔ purrr     1.1.0     
+## ✔ ggplot2   4.0.2     ✔ tibble    3.3.1
+## ✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+## ✔ purrr     1.2.1     
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
@@ -61,9 +61,14 @@ str(df)
 ```
 
 ``` r
-View(df)
-
-df_clean <- df %>% replace_na(list(jp_sales = 0, na_sales = 0, pal_sales = 0, other_sales = 0)) %>% drop_na(critic_score) 
+df_clean <- df %>%
+ mutate(
+    jp_sales = replace_na(jp_sales, 0),
+    na_sales = replace_na(na_sales, 0),
+    pal_sales = replace_na(pal_sales, 0),
+    other_sales = replace_na(other_sales, 0)
+  ) %>%
+  drop_na(critic_score, total_sales)
 ```
 
 ### Next, we split the games into different categories by sales.
@@ -91,5 +96,107 @@ large_games <- df_clean %>%
 very_large_games <- df_clean %>% 
   filter(total_sales >= 10)
 ```
+
+### Top 10 Best Selling Games
+
+``` r
+top_games <- df_clean %>%
+  arrange(desc(total_sales)) %>%
+  select(title, developer,  console, release_date, total_sales) %>%
+  head(10)
+
+top_games
+```
+
+```
+##                             title      developer console release_date
+## 1              Grand Theft Auto V Rockstar North     PS3   17-09-2013
+## 2              Grand Theft Auto V Rockstar North     PS4   18-11-2014
+## 3     Grand Theft Auto: Vice City Rockstar North     PS2   28-10-2002
+## 4       Call of Duty: Black Ops 3       Treyarch     PS4   06-11-2015
+## 5  Call of Duty: Modern Warfare 3  Infinity Ward    X360   08-11-2011
+## 6         Call of Duty: Black Ops       Treyarch    X360   09-11-2010
+## 7           Red Dead Redemption 2 Rockstar Games     PS4   26-10-2018
+## 8      Call of Duty: Black Ops II       Treyarch    X360   13-11-2012
+## 9      Call of Duty: Black Ops II       Treyarch     PS3   13-11-2012
+## 10 Call of Duty: Modern Warfare 2  Infinity Ward    X360   10-11-2009
+##    total_sales
+## 1        20.32
+## 2        19.39
+## 3        16.15
+## 4        15.09
+## 5        14.82
+## 6        14.74
+## 7        13.94
+## 8        13.86
+## 9        13.80
+## 10       13.53
+```
+
+### Critic Score vs Sales
+
+``` r
+ggplot(df_clean, aes(x = critic_score, y = total_sales)) +
+  geom_point(alpha =0.3)+
+   labs(
+    title = "Critic Score vs. Total Sales",
+    x = "Critic Score",
+    y = "Total Sales (millions)"
+  ) 
+```
+
+![](README_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+## Sales by Genre
+
+``` r
+genre_summary <-df_clean %>%
+  group_by(genre) %>%
+  summarise(
+    avg_sales = mean(total_sales),
+    total_sales = sum(total_sales),
+    count = n()
+  ) %>%
+  arrange(desc(avg_sales))
+
+ggplot(genre_summary, aes(x = reorder(genre, avg_sales), y = avg_sales, fill = avg_sales))+
+  geom_col()+
+  coord_flip()+
+  labs(
+    title = "Average Sales by Genre",
+    x = "Genre",
+    y = "Average Total Sales (millions)"
+  ) 
+```
+
+![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+## Sales by Console
+
+``` r
+console_summary <- df_clean %>%
+  group_by(console) %>%
+  summarise(
+    total_sales = sum(total_sales),
+    avg_sales = mean(total_sales),
+    count = n()
+  )%>%
+  filter(count >= 20) %>%
+  arrange(desc(total_sales))
+
+ggplot(console_summary, aes(x = reorder(console, total_sales), y = total_sales, fill = avg_sales)) +
+  geom_col() +
+  coord_flip() +
+   labs(
+    title = "Consoles by Total Sales",
+    x = "Console",
+    y = "Total Sales (millions)"
+  ) 
+```
+
+![](README_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+
+
 
 
