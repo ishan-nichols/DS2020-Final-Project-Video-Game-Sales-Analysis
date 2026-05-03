@@ -85,7 +85,13 @@ ggplot(df_clean, aes(x = critic_score, y = total_sales)) +
     x = "Critic Score",
     y = "Total Sales (millions)"
   ) 
+
+cor(df$critic_score, df$total_sales, use = "complete.obs")
 ```
+
+
+From the correlation coefficient of 0.28, we can see that critic score and total sales have a weak positive correlation. The graph shows that as the critic score increases, the total sales in millions increases slightly, but there is not a very obvious direct relationship. What we do see, however, is that all games with over 10 million sales have a critic score of at least 7. 
+
 
 ## Sales by Genre
 ```{r}
@@ -98,6 +104,8 @@ genre_summary <-df_clean %>%
   ) %>%
   arrange(desc(avg_sales))
 
+genre_summary
+
 ggplot(genre_summary, aes(x = reorder(genre, avg_sales), y = avg_sales, fill = avg_sales))+
   geom_col()+
   coord_flip()+
@@ -107,6 +115,7 @@ ggplot(genre_summary, aes(x = reorder(genre, avg_sales), y = avg_sales, fill = a
     y = "Average Total Sales (millions)"
   ) 
 ```
+From the bar graph, we can see which genre of video games sell more on average. The bar graph shows this to be clearly sandbox, but this is not a reliable conclusion as there is only one sandbox game included in the dataset. The true most popular games which have a statistically significant sample size are shooter, action-adventure, and sports. The least popular games are strategy, puzzle, and platform. Again the graph shows genres like Visual Novel, MMO, and Board Game, but their sample sizes are too low to draw any conclusions.
 
 ## Sales by Console
 ```{r}
@@ -129,6 +138,10 @@ ggplot(console_summary, aes(x = reorder(console, total_sales), y = total_sales, 
     y = "Total Sales (millions)"
   ) 
 ```
+
+From the bar graph, we can see that the consoles with the highest total game sales are the Xbox 360, PS3, almost tied, and then the PS2, PS4, and Wii. The colors of the bars show us how many games each console sold on average. This is a better metric to measure a console's game success, as the more successful gaming consoles will have more game sales just based on volume. Even with this, however, the average sales follow the same pattern that total sales do.
+
+
 
 
 
