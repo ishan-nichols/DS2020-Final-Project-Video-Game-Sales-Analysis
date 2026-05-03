@@ -252,7 +252,7 @@ ggplot(regional_sales, aes(x= reorder(region, sales), y = sales, fill = region))
 
 ![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
-From the chart we can see the North America has the largest market for video games with around 1.5 billion total sales, next is Europe and Australia with around 1 billion. 
+From the chart we can see that North America has the largest market for video games with around 1.5 billion total sales, next is Europe and Australia with around 1 billion. 
 
 ## Sales by game size category
 
@@ -277,7 +277,8 @@ ggplot(all_games, aes(x = sales_category, fill = sales_category))+
 ```
 
 ![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
-`
+## score by game size
+
 
 ``` r
 ggplot(all_games, aes(x = sales_category, y = critic_score, fill = sales_category)) +
