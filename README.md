@@ -333,3 +333,95 @@ q1 |> ggplot(aes(x = critic_score, y = total_sales, color = genre)) +
 ```
 
 ![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+## Sales Over Time
+
+``` r
+df_clean <- df_clean %>%
+  mutate(year = as.integer(str_sub(release_date, -4)))%>%
+  filter(!is.na(year), year >= 1980, year <= 2023)
+
+sales_by_year <- df_clean %>%
+  group_by(year) %>%
+  summarise(total_sales = sum(total_sales))
+
+ggplot(sales_by_year, aes(x = year, y = total_sales)) +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_point(color = "steelblue") +
+  labs(
+    title = "Total Game Sales Over Time",
+    x = "Year",
+    y = "Total Sales (millions)"
+  ) 
+```
+
+![](README_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
+## Top 10 Publishers by Average Sales
+
+``` r
+publisher_summary <- df_clean %>%
+  group_by(publisher) %>%
+  summarise(
+    avg_sales = mean(total_sales),
+    count = n()
+  ) %>%
+  filter(count >= 10) %>%
+  arrange(desc(avg_sales)) %>%
+  head(10)
+
+ggplot(publisher_summary, aes(x = reorder(publisher, avg_sales), y = avg_sales)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Publishers by Average Sales",
+    x = "Publisher",
+    y = "Average Sales per Game (millions)"
+  )
+```
+
+![](README_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+##Regional Sales by Genre
+
+``` r
+regional_genre <- df_clean %>%
+  group_by(genre) %>%
+  summarise(
+    `North America` = sum(na_sales),
+    `Japan` = sum(jp_sales),
+    `Europe/Australia` = sum(pal_sales),
+    `Other` = sum(other_sales)
+  ) %>%
+  pivot_longer(-genre, names_to = "region", values_to = "sales")
+
+ggplot(regional_genre, aes(x = reorder(genre, sales), y = sales, fill = region)) +
+  geom_col(position = "fill") +
+  coord_flip() +
+  labs(
+    title = "Regional Sales Breakdown by Genre",
+    x = "Genre",
+    y = "Proportion of Sales",
+    fill = "Region"
+  )
+```
+
+![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+##Critic Score Distribution by Genre
+
+``` r
+valid_genres <- genre_summary %>% filter(count >= 10)
+
+ggplot(df_clean %>% filter(genre %in% valid_genres$genre), aes(x = reorder(genre, critic_score, FUN = median), 
+                     y = critic_score, fill = genre)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(
+    title = "Critic Score Distribution by Genre",
+    x = "Genre",
+    y = "Critic Score"
+  ) +
+  theme(legend.position = "none")
+```
+
+![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
