@@ -292,3 +292,44 @@ ggplot(all_games, aes(x = sales_category, y = critic_score, fill = sales_categor
 
 ![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
+## Investigating correlation of specific genres (most popular)
+
+``` r
+#identify the top 5 genres of games
+topGenres <- df_clean |> count(genre) |> top_n(5,n) |> pull(genre)
+
+#filter with top genres
+q1 <- df_clean |> filter(genre %in% topGenres)
+
+#calculate correlations by genre
+correlations <- q1 |> group_by(genre) |> summarise(
+  corVal = cor(critic_score, total_sales, use = "complete.obs"),
+  .groups = 'drop'
+) |> mutate(
+  label = paste0("r = ", round(corVal,2))
+)
+
+
+#plot with facet wrap and correlation
+q1 |> ggplot(aes(x = critic_score, y = total_sales, color = genre)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = F, color = "black") + #trend line gets added
+  geom_text(data = correlations, #this adds the corVal in the rigth spot for each genre
+            aes(x = -Inf, y = Inf, label = label), 
+            hjust = -0.2, vjust = 1.5, 
+            color = "black", size = 5, fontface = "bold",
+            inherit.aes = FALSE) +
+  facet_wrap(~genre) +
+  theme_minimal() +
+  labs(
+    title = "Critic score vs total sales across top genres",
+    x = "Critic Score",
+    y = "Total Sales (millions)"
+  )
+```
+
+```
+## `geom_smooth()` using formula = 'y ~ x'
+```
+
+![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
