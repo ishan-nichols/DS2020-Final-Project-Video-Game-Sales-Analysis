@@ -406,7 +406,7 @@ ggplot(regional_genre, aes(x = reorder(genre, sales), y = sales, fill = region))
 ```
 
 ![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
-
+From the chart we can see that North America has the largest proportion of sales in almost all genres, which coorelates with the large total proportion North American sales make up of all games. Shooter and Action games are especially dominated by NA and European/Australian sales which reflects the popularity of franchises like Call of Duty in those regions. Japan has their largest proportion in party games which reflects the popularity Nintendo with games like Mario Kart.
 ##Critic Score Distribution by Genre
 
 ``` r
