@@ -425,3 +425,26 @@ ggplot(df_clean %>% filter(genre %in% valid_genres$genre), aes(x = reorder(genre
 ```
 
 ![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+## The shift in dominance of top 5 publishers over time (only focusing on more recent games in dataset()
+
+``` r
+#first identify which publishers are the top 5
+topPublishers <- df_clean |> group_by(publisher) |> summarise(total = sum(total_sales)) |> top_n(5, total) |> pull(publisher)
+#calculate the yearly sales of each publisher
+q2 <- df_clean |> filter(publisher %in% topPublishers) |> filter(year >=2000 & year < 2019) |> group_by(year, publisher) |> summarise(yearly_sales = sum(total_sales), .groups = 'drop')
+
+#plotting the data over time with geom line and point
+q2 |> ggplot(aes(x = year, y = yearly_sales, color = publisher)) +
+  geom_line() +
+  geom_point() +
+  theme_minimal() +
+  labs(
+    title = "Change in publisher dominance over time",
+    x = "Release year (2000-2019)",
+    y = "Total sales (millions)",
+    color = "Publisher"
+  )
+```
+
+![](README_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
