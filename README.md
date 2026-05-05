@@ -11,13 +11,64 @@ output:
 
 Mason Gliege, Ewan Farnum, Ishan Nichols
 
-# Cleaning
+## Introduction
 
-First, we read the dataset and stored it as a dataframe. 
+The video game industry is a multi-billion dollar global market. Our group aims to study the historical trends of how video games perform in order to identify relationships between factors like critic score, genre, total sales, and more.
 
-The data had some null sales numbers, so we replaced them with zeros. 
+Here are some questions we aim to answer, including but not limited to:
+
+-   What are the most popular genres of video games?
+
+-   How are video game sales distributed across regions of the global market?
+
+-   Do some consoles have higher average video game sales than others?
+
+-   What video game publishers are most dominant? How has this changed?
+
+-   Is there a correlation between a game's sales and its critic score? What other factors might influence this relationship?
+
+## Data and Variables
+
+Our project utilized the "Video Game Sales & Industry Data (1980 - 2024)" dataset from Kaggle. This 8.3 MB dataset contains tens of thousands of video games, where each row is a game, and contains information such as its total sales, critic score, genre, etc. The complete list of variables can be found below.
+
+**Variables:**
+
+title: Game title
+
+console: The game was released for the console
+
+genre: Genre of the game
+
+publisher: Publisher of the game
+
+developer: Developer of the game
+
+critic_score: Metacritic score (out of 10)
+
+total_sales: Global sales of copies in millions
+
+na_sales: North American sales of copies in millions
+
+jp_sales: Japanese sales of copies in millions
+
+pal_sales: European & African sales of copies in millions
+
+other_sales: Rest of world sales of copies in millions
+
+release_date: Date the game was released on
+
+last_update: Date the data was last updated
+
+## Cleaning
+
+The Kaggle dataset was very easy to work with, but still required some basic cleaning steps before we could work with it.
+
+First, we read the dataset and stored it as a dataframe.
+
+The data had some null sales numbers, so we replaced them with zeros.
 
 There were also null values for critic scores. Since there is no way to estimate scores on games using the existing data, we removed all rows with no score. Additionally, there were null values in total sales so those were also removed
+
 
 ``` r
 library(tidyverse)
@@ -71,11 +122,14 @@ df_clean <- df %>%
   drop_na(critic_score, total_sales)
 ```
 
-### Next, we split the games into different categories by sales.
+## Next, we split the games into different categories by sales.
 
 Small Games: under 100k sales
+
 Medium Games: between 100k and 1 million sales
+
 Large Games: between 1 million and 10 million sales
+
 Very_Large_Games: over 10 million sales
 
 
@@ -97,7 +151,8 @@ very_large_games <- df_clean %>%
   filter(total_sales >= 10)
 ```
 
-### Top 25 Best Selling Games
+## Top 25 Best Selling Games
+
 
 ``` r
 top_games <- df_clean %>%
@@ -123,7 +178,9 @@ ggplot(top_games, aes(x = reorder(title, total_sales), y=total_sales)) +
 ```
 
 ![](README_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
-### Critic Score vs Sales
+
+## Critic Score vs Sales
+
 
 ``` r
 ggplot(df_clean, aes(x = critic_score, y = total_sales)) +
@@ -145,10 +202,10 @@ cor(df$critic_score, df$total_sales, use = "complete.obs")
 ## [1] 0.2811658
 ```
 
-
-From the correlation coefficient of 0.28, we can see that critic score and total sales have a weak positive correlation. The graph shows that as the critic score increases, the total sales in millions increases slightly, but there is not a very obvious direct relationship. What we do see, however, is that all games with over 10 million sales have a critic score of at least 7. 
+From the correlation coefficient of 0.28, we can see that critic score and total sales have a weak positive correlation. The graph shows that as the critic score increases, the total sales in millions increases slightly, but there is not a very obvious direct relationship. What we do see, however, is that all games with over 10 million sales have a critic score of at least 7. We will revisit the correlation later.
 
 ## Sales by Genre
+
 
 ``` r
 genre_summary <-df_clean %>%
@@ -200,9 +257,11 @@ ggplot(genre_summary, aes(x = reorder(genre, avg_sales), y = avg_sales))+
 ```
 
 ![](README_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
 From the bar graph, we can see which genre of video games sell more on average. The bar graph shows this to be clearly sandbox, but this is not a reliable conclusion as there is only one sandbox game included in the dataset. The true most popular games which have a statistically significant sample size are shooter, action-adventure, and sports. The least popular games are strategy, puzzle, and platform. Again the graph shows genres like Visual Novel, MMO, and Board Game, but their sample sizes are too low to draw any conclusions.
 
 ## Average Sales by Console
+
 
 ``` r
 console_summary <- df_clean %>%
@@ -230,6 +289,7 @@ From the bar graph, we can see that the consoles with the highest average total 
 
 ## Sales by Region
 
+
 ``` r
 regional_sales <- df_clean %>%
   summarise(
@@ -252,9 +312,10 @@ ggplot(regional_sales, aes(x= reorder(region, sales), y = sales, fill = region))
 
 ![](README_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
-From the chart we can see that North America has the largest market for video games with around 1.5 billion total sales, next is Europe and Australia with around 1 billion. 
+From the chart we can see that North America has the largest market for video games with around 1.5 billion total sales, next is Europe and Australia with around 1 billion.
 
 ## Sales by game size category
+
 
 ``` r
 small_games$sales_category <- "Small (<100k)"
@@ -277,7 +338,8 @@ ggplot(all_games, aes(x = sales_category, fill = sales_category))+
 ```
 
 ![](README_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
-## score by game size
+
+## Score by game size
 
 
 ``` r
@@ -292,7 +354,18 @@ ggplot(all_games, aes(x = sales_category, y = critic_score, fill = sales_categor
 
 ![](README_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
-## Investigating correlation of specific genres (most popular)
+
+## Skepticism of Correlation: Critic Score vs Total Sales (Millions)
+
+Earlier, we found a relatively weak, positive correlation of **0.28** between Critic Score and Total Sales. What if this correlation is weak because it takes into account **all** video games, which have a variety of factors influencing sales? For example, certain genres may have fans that are more critical of the game than others. A racing game might be criticized by how well the physics engine runs, while an acion game might be praised by its cinematics.
+
+Since different genres have different criteria for critic score, we hypothesized that narrowing the correlation to a few specific genres would lead to a stronger correlation between the critic score and total sales.
+
+
+## Investigating correlation of Critic Score vs Total Sales in the most popular genres
+
+In this code, we identified the top 5 most popular genres by the number of games in those genres. Then, made a faceted scatterplot showing the trendline and r-value of the Critic Score vs Total Sales in each genre.
+
 
 ``` r
 #identify the top 5 genres of games
@@ -333,7 +406,12 @@ q1 |> ggplot(aes(x = critic_score, y = total_sales, color = genre)) +
 ```
 
 ![](README_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+This revealed that the top 5 video game genres all have correlations that, while still relatively weak, are higher than the correlation from all games combined (up to 0.37). We believe that this is due to specific, well known genres having predictable patterns, while smaller games in lesser known genres create a lot of "noise" that throws off the r-value.
+
+
 ## Sales Over Time
+
 
 ``` r
 df_clean <- df_clean %>%
@@ -358,6 +436,7 @@ ggplot(sales_by_year, aes(x = year, y = total_sales)) +
 
 ## Top 10 Publishers by Average Sales
 
+
 ``` r
 publisher_summary <- df_clean %>%
   group_by(publisher) %>%
@@ -381,7 +460,8 @@ ggplot(publisher_summary, aes(x = reorder(publisher, avg_sales), y = avg_sales))
 
 ![](README_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
-##Regional Sales by Genre
+## Regional Sales by Genre
+
 
 ``` r
 regional_genre <- df_clean %>%
@@ -406,8 +486,11 @@ ggplot(regional_genre, aes(x = reorder(genre, sales), y = sales, fill = region))
 ```
 
 ![](README_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
 From the chart we can see that North America has the largest proportion of sales in almost all genres, which coorelates with the large total proportion North American sales make up of all games. Shooter and Action games are especially dominated by NA and European/Australian sales which reflects the popularity of franchises like Call of Duty in those regions. Japan has their largest proportion in party games which reflects the popularity Nintendo with games like Mario Kart.
-##Critic Score Distribution by Genre
+
+## Critic Score Distribution by Genre
+
 
 ``` r
 valid_genres <- genre_summary %>% filter(count >= 10)
@@ -427,6 +510,7 @@ ggplot(df_clean %>% filter(genre %in% valid_genres$genre), aes(x = reorder(genre
 ![](README_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ## The shift in dominance of top 5 publishers over time (only focusing on more recent games in dataset()
+
 
 ``` r
 #first identify which publishers are the top 5
