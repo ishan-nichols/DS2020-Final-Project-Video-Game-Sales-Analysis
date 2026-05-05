@@ -262,13 +262,11 @@ ggplot(all_games, aes(x = sales_category, y = critic_score, fill = sales_categor
   ) 
 ```
 
-
 ## Skepticism of Correlation: Critic Score vs Total Sales (Millions)
 
 Earlier, we found a relatively weak, positive correlation of **0.28** between Critic Score and Total Sales. What if this correlation is weak because it takes into account **all** video games, which have a variety of factors influencing sales? For example, certain genres may have fans that are more critical of the game than others. A racing game might be criticized by how well the physics engine runs, while an acion game might be praised by its cinematics.
 
 Since different genres have different criteria for critic score, we hypothesized that narrowing the correlation to a few specific genres would lead to a stronger correlation between the critic score and total sales.
-
 
 ## Investigating correlation of Critic Score vs Total Sales in the most popular genres
 
@@ -311,7 +309,6 @@ q1 |> ggplot(aes(x = critic_score, y = total_sales, color = genre)) +
 ```
 
 This revealed that the top 5 video game genres all have correlations that, while still relatively weak, are higher than the correlation from all games combined (up to 0.37). We believe that this is due to specific, well known genres having predictable patterns, while smaller games in lesser known genres create a lot of "noise" that throws off the r-value.
-
 
 ## Sales Over Time
 
@@ -400,7 +397,9 @@ ggplot(df_clean %>% filter(genre %in% valid_genres$genre), aes(x = reorder(genre
   theme(legend.position = "none")
 ```
 
-## The shift in dominance of top 5 publishers over time (only focusing on more recent games in dataset()
+## The shift in dominance of top 5 publishers over time
+
+One important aspect of studying trends in the video game industry is not only the game genres, but also the publishers who released them. We decided to analyze the top 5 publishers over a 20 year span from 2000-2019. The top 5 were chosen by which publishers had the highest sum of total sales over that 20 year span. The figure below shows how different publishers dominate the market by displaying their total sales for each year.
 
 ```{r}
 #first identify which publishers are the top 5
@@ -420,3 +419,41 @@ q2 |> ggplot(aes(x = year, y = yearly_sales, color = publisher)) +
     color = "Publisher"
   )
 ```
+
+It is interesting how each of these publishers can have dramatically different sales from year to year, and it's hard to determine one publisher that dominates over this large 20 year span. In fact, many of the spikes in sales could be attributed to the release of major games. Some notable games that contribute to these spikes include:
+
+-   Call of Duty: Modern Warfare 2 (Activision, 2009)
+
+-   Grand Theft Auto V (Rockstar Games, 2013
+
+-   Madden 12 + Battlefield 3 (Electronic Arts, 2011)
+
+## Conclusions and Recommendations
+
+-   Publishers should focus on the North American market, as the majority of sales come from there.
+
+-   Studios should prioritize developing sandbox, shooter, action-adventure, and sports games, as those are the best-selling genres.
+
+-   Critic scores should not be used as a complete and accurate measure of a game's success, the correlation is positive but weak.
+
+-   Publishers should continue to constantly push for big new releases, as the dominant player in the market is constantly changing.
+
+## Limitations
+
+-   While our data was suitable for this project, the total sales for each game is only a single number. A dataset which contains the sales for each game during periods of time (months, quarters, years, etc.) would produce more detailed and accurate results of how sales change
+
+-   The data is quite comprehensive of what video games released until about 2020. From 2020-2024, it seemed that there were many notable game releases that weren't accounted for.
+
+-   Reliance on just this data source limited our ability to show how sales change. There are other external factors contributing to game sales that weren't present in the dataset. For example, an economic recession might lead to lower overall sales.
+
+-   This dataset limited releases to consoles (for the most part), and didn't account for much activity from sites like steam
+
+## Future Research
+
+If we were to continue this project, there are a number of things we could expand on:
+
+-   Combining this dataset with a dataset of global economic trends could prove that sales fluctuate depending on the condition of the regional or global economy
+
+-   Obtaining data from Steam would be very useful since PC gaming is a very large market that's mostly excluded from this dataset. There's a higher amount of smaller "indie" games which likely have different sales patterns due to them being in a much smaller market
+
+-   Machine learning models like logistic regression or random forest could be used to **predict** how well a game will perform (critic score, sales, etc) based on variables like its genre, console, etc.
