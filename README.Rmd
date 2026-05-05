@@ -1,8 +1,7 @@
 ---
 title: "My Project"
 output:
-  html_document:
-    keep_md: true
+  github_document
 ---
 
 ```{r setup, include=FALSE}
