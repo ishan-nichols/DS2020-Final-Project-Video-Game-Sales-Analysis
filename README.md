@@ -177,6 +177,13 @@ ggplot(top_games, aes(x = reorder(title, total_sales), y=total_sales)) +
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
+From the chart we can see that GTA V is the best selling game by a large
+margin with almost 50 million sales. The top games are dominated by Call
+of Duty and GTA franchises, making up 13 of the top 25 games.
+Additionally, FIFA makes up another 4 games, so 3 franchises make up 17
+out of the top 25 games. From this we can see that franchise recognition
+is a major component of success in games.
+
 ## Critic Score vs Sales
 
 ``` r
@@ -314,7 +321,8 @@ ggplot(regional_sales, aes(x= reorder(region, sales), y = sales, fill = region))
     title = "Total Sales by Region",
     x = "Region",
     y = "Total Sales (millions)"
-  )
+  )+
+  theme(legend.position = "none")
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -347,6 +355,13 @@ ggplot(all_games, aes(x = sales_category, fill = sales_category))+
 
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
+The vast majority of games fit into the medium category with 100k to 1M
+sales. The medium category has more games than any of the other
+categories combined. Very large games that sell over 10 million copies
+make up a very small portion of the total games. From this we can see
+that a small fraction of games generate extreme sales while the majority
+of games sell moderately well.
+
 ## Score by game size
 
 ``` r
@@ -360,6 +375,12 @@ ggplot(all_games, aes(x = sales_category, y = critic_score, fill = sales_categor
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+The median critic score increases slightly as game size increases. Very
+large games have the smallest spread, indicating that blockbuster games
+are almost always highly reviewed. Small games have the largest spread
+and lowest median, displaying that low selling games tend correspond to
+lower reviews.
 
 ## Skepticism of Correlation: Critic Score vs Total Sales (Millions)
 
@@ -436,7 +457,8 @@ df_clean <- df_clean %>%
 
 sales_by_year <- df_clean %>%
   group_by(year) %>%
-  summarise(total_sales = sum(total_sales))
+  summarise(total_sales = sum(total_sales))%>%
+  filter(year <= 2011)
 
 ggplot(sales_by_year, aes(x = year, y = total_sales)) +
   geom_line(color = "steelblue", linewidth = 1) +
@@ -449,6 +471,13 @@ ggplot(sales_by_year, aes(x = year, y = total_sales)) +
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+Looking at the chart total game sales rose rapidly through the early
+2000s peaking around 2011 which reflects the height of the PS3 and Xbox
+360 era and dominance of franchises like Call of Duty. Years after 2019
+are excluded due to incomplete data coverage that does not reflect the
+actual total game sales of those years. The overall trend shows a clear
+growth through the 2000s and into the 2010s.
 
 ## Top 10 Publishers by Average Sales
 
@@ -474,6 +503,11 @@ ggplot(publisher_summary, aes(x = reorder(publisher, avg_sales), y = avg_sales))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+We can see that Rockstar Games is by far the best selling publisher with
+over double the average sales of Microsoft in second. This reflects with
+the imense success of GTA along with their other games. We can see the
+next 9 publishers all have comparable average sales.
 
 ## Regional Sales by Genre
 
@@ -527,6 +561,13 @@ ggplot(df_clean %>% filter(genre %in% valid_genres$genre), aes(x = reorder(genre
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+Sports and Strategy games have the highest median scores, while action
+and platformer games have the lowest with large spreads, showing more
+variability in those genres. The genres that had the highest average
+sales, Shooter and Action-Adventure games, sit in the middle of the
+critic score rankings, showing that commercial success and critic score
+do not always correlate.
 
 ## The shift in dominance of top 5 publishers over time
 
