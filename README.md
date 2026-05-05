@@ -168,12 +168,8 @@ ggplot(top_games, aes(x = reorder(title, total_sales), y=total_sales)) +
     title = "Top 25 Best-Selling Games",
     x = "Game",
     y = "Total Sales (millions)",
-    fill = "Console"
   )
 ```
-
-    ## Ignoring unknown labels:
-    ## • fill : "Console"
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 

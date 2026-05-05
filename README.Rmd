@@ -133,7 +133,6 @@ ggplot(top_games, aes(x = reorder(title, total_sales), y=total_sales)) +
     title = "Top 25 Best-Selling Games",
     x = "Game",
     y = "Total Sales (millions)",
-    fill = "Console"
   )
 ```
 
